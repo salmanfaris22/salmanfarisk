@@ -1,0 +1,854 @@
+<title>Keyframe Portfolio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Concept: the page is an After Effects comp window. Timecodes, layers, keyframe
+   diamonds and a sweeping playhead carry the theme. Yellow marks whatever is active. */
+:root {
+  --bg: #0c0c0a;
+  --deep: #080807;
+  --panel: #14140f;
+  --panel-2: #1c1c14;
+  --line: #2c2c22;
+  --fg: #f3f0e3;
+  --muted: #a29f8f;
+  --accent: #ffd21f;
+  --accent-hover: #ffe262;
+  --accent-soft: #3b3407;
+  --ink: #0c0c0a;
+  --font-display: "Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --lnum: 64px;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  z-index: 30;
+  background: var(--bg);
+}
+
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+.wrap {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* ---------- header ---------- */
+.site-head {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 20;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+.head-in {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px 24px;
+  padding-block: 10px;
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.4rem;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.brand i {
+  display: block;
+  width: 12px;
+  height: 12px;
+  background: var(--accent);
+  transform: rotate(45deg);
+}
+nav { justify-self: center; min-width: 0; }
+nav ul { display: flex; gap: 4px; margin: 0; padding: 0; list-style: none; }
+nav a {
+  display: block;
+  padding: 8px 12px;
+  font: 500 .78rem var(--font-mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: color .2s, border-color .2s;
+}
+nav a:hover, nav a[aria-current="true"] { color: var(--fg); border-color: var(--accent); }
+.tc {
+  font: 500 .78rem var(--font-mono);
+  color: var(--accent);
+  letter-spacing: .06em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- shared ---------- */
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 16px;
+  font: 500 .78rem var(--font-mono);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.eyebrow::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+  transform: rotate(45deg);
+}
+h1, h2, h3 { font-family: var(--font-display); text-transform: uppercase; text-wrap: balance; }
+h2 {
+  margin: 0;
+  font-weight: 900;
+  font-size: clamp(2.8rem, 7vw, 5.2rem);
+  line-height: .9;
+}
+.sec {
+  padding-block: clamp(56px, 8vw, 112px);
+  border-top: 1px solid var(--line);
+  scroll-margin-top: 72px;
+}
+.sec-head { margin-bottom: clamp(28px, 4vw, 52px); }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 12px 22px;
+  font: 600 1rem var(--font-body);
+  text-decoration: none;
+  color: var(--fg);
+  background: transparent;
+  border: 2px solid var(--accent);
+  cursor: pointer;
+  transition: background .2s, color .2s, transform .2s;
+}
+.btn:hover { transform: translateY(-2px); background: var(--accent-soft); }
+.btn-primary { background: var(--accent); color: var(--ink); }
+.btn-primary:hover { background: var(--accent-hover); }
+.btn svg { width: 20px; height: 20px; flex: none; }
+
+/* ---------- hero ---------- */
+.hero { padding-block: clamp(32px, 7vw, 88px) clamp(48px, 7vw, 96px); }
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
+  gap: clamp(28px, 5vw, 64px);
+  align-items: center;
+}
+.hero-grid > * { min-width: 0; }
+h1 {
+  margin: 0 0 24px;
+  font-weight: 900;
+  font-size: clamp(3.1rem, 9vw, 6.6rem);
+  line-height: .9;
+}
+h1 em { font-style: normal; color: var(--accent); }
+.lede { max-width: 50ch; margin: 0 0 32px; font-size: 1.15rem; color: var(--muted); }
+.cta-row { display: flex; flex-wrap: wrap; gap: 12px; }
+
+.comp { background: var(--panel); border: 1px solid var(--line); }
+.comp-bar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line);
+  font: 500 .7rem var(--font-mono);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.comp-bar b { font-weight: 500; color: var(--accent); font-variant-numeric: tabular-nums; }
+.stage {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  max-width: 100%;
+  overflow: hidden;
+  container-type: inline-size;
+  background-color: var(--deep);
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 10% 17.78%;
+}
+.stage-title {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 2.6rem;
+  font-size: 19cqw;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--fg);
+  white-space: nowrap;
+  opacity: .25;
+  letter-spacing: .3em;
+  padding-left: .3em;
+}
+.orb {
+  position: absolute;
+  left: 6%;
+  bottom: 12%;
+  width: 9%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.sq {
+  position: absolute;
+  top: 10%;
+  right: 8%;
+  width: 11%;
+  aspect-ratio: 1;
+  border: 2px solid var(--accent);
+}
+.track { position: relative; height: 66px; border-top: 1px solid var(--line); }
+.ruler {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 10px;
+  background-image: repeating-linear-gradient(90deg, var(--muted) 0 1px, transparent 1px 10%);
+  opacity: .6;
+}
+.kf-row { position: absolute; left: 0; right: 0; top: 30px; height: 14px; border-top: 1px dashed var(--line); }
+.kf {
+  position: absolute;
+  top: -6px;
+  width: 11px;
+  height: 11px;
+  border: 1.5px solid var(--accent);
+  background: var(--panel);
+  transform: translateX(-50%) rotate(45deg);
+}
+.kf.on { background: var(--accent); }
+.playhead {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 2px;
+  background: var(--accent);
+}
+.playhead::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -5px;
+  border: 6px solid transparent;
+  border-top-color: var(--accent);
+}
+
+/* ---------- about ---------- */
+.about-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
+  gap: clamp(28px, 5vw, 72px);
+  align-items: start;
+}
+.about-grid > * { min-width: 0; }
+.about-copy p { margin: 0 0 18px; max-width: 58ch; color: var(--muted); }
+.about-copy p.lead { font-size: clamp(1.3rem, 2.4vw, 1.7rem); line-height: 1.35; color: var(--fg); }
+.spec { margin: 0; background: var(--panel); border: 1px solid var(--line); }
+.spec > div {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 12px;
+  padding: 14px 18px;
+}
+.spec > div + div { border-top: 1px solid var(--line); }
+.spec dt { font: 500 .74rem var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); padding-top: 3px; }
+.spec dd { margin: 0; }
+
+/* ---------- skills ---------- */
+.layers { position: relative; background: var(--panel); border: 1px solid var(--line); }
+.layer { display: grid; grid-template-columns: var(--lnum) minmax(0, 1fr); }
+.layer + .layer { border-top: 1px solid var(--line); }
+.lnum {
+  display: flex;
+  justify-content: center;
+  padding-top: 26px;
+  font: 500 .9rem var(--font-mono);
+  color: var(--muted);
+  background: var(--panel-2);
+  border-right: 1px solid var(--line);
+}
+.lmain { display: flex; flex-direction: column; min-width: 0; }
+.lbody { padding: 22px clamp(16px, 3vw, 32px) 0; }
+.lhead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; }
+.lhead h3 { margin: 0; font-weight: 800; font-size: clamp(2.2rem, 5vw, 3.2rem); line-height: 1; }
+.lkind { font: 500 .74rem var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+.lbody p { max-width: 62ch; margin: 8px 0 16px; color: var(--muted); }
+.tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0 0 22px; list-style: none; }
+.tags li { padding: 3px 10px; font: 500 .76rem var(--font-mono); border: 1px solid var(--line); }
+.lbar { position: relative; height: 8px; margin-top: auto; background: var(--accent); }
+.lbar i {
+  position: absolute;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  background: var(--ink);
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+.sweep { position: absolute; top: 0; bottom: 0; left: var(--lnum); right: 0; pointer-events: none; z-index: 2; }
+.sweep::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 2px;
+  background: var(--accent);
+  opacity: .6;
+  box-shadow: 0 0 12px var(--accent);
+  animation: sweep 8s linear infinite;
+}
+@keyframes sweep { to { left: calc(100% - 2px); } }
+
+/* ---------- projects ---------- */
+.proj-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.proj {
+  display: flex;
+  flex-direction: column;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  transition: border-color .2s, transform .2s;
+}
+.proj:hover { border-color: var(--accent); transform: translateY(-3px); }
+.thumb { aspect-ratio: 16 / 9; overflow: hidden; background: var(--deep); border-bottom: 1px solid var(--line); }
+.thumb svg { display: block; width: 100%; height: 100%; transition: transform .5s; }
+.proj:hover .thumb svg { transform: scale(1.04); }
+.pinfo { display: flex; flex: 1; flex-direction: column; gap: 10px; padding: 20px; }
+.pmeta { display: flex; justify-content: space-between; gap: 12px; font: 500 .72rem var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.pmeta b { font-weight: 500; color: var(--accent); }
+.proj h3 { margin: 0; font-weight: 800; font-size: clamp(1.9rem, 3.6vw, 2.4rem); line-height: 1; }
+.proj p { margin: 0; color: var(--muted); }
+.proj .tags { padding: 6px 0 0; margin-top: auto; }
+
+.fa { fill: var(--accent); }
+.fn { fill: none; }
+.fl { fill: var(--line); }
+.fp { fill: var(--panel-2); }
+.sa { stroke: var(--accent); }
+.sl { stroke: var(--line); }
+.sm { stroke: var(--muted); }
+.svg-display { font-family: var(--font-display); font-weight: 900; }
+.spin { transform-origin: 160px 90px; animation: spin 5s linear infinite paused; }
+.proj:hover .spin { animation-play-state: running; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------- contact ---------- */
+.contact-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(28px, 5vw, 72px);
+  align-items: start;
+}
+.contact-grid > * { min-width: 0; }
+.contact-lead { max-width: 44ch; margin: 20px 0 8px; font-size: 1.15rem; color: var(--muted); }
+.num-label { margin: 28px 0 0; font: 500 .74rem var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.big-num {
+  margin: 4px 0 16px;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(3rem, 10vw, 6rem);
+  line-height: 1;
+  letter-spacing: .03em;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.copy-status { min-height: 1.6em; margin: 10px 0 0; font: 500 .8rem var(--font-mono); color: var(--muted); }
+.composer { display: flex; flex-direction: column; gap: 18px; padding: clamp(18px, 3vw, 28px); background: var(--panel); border: 1px solid var(--line); }
+.composer label { display: block; margin-bottom: 6px; font: 500 .74rem var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.composer input, .composer textarea {
+  display: block;
+  width: 100%;
+  padding: 12px 14px;
+  font: inherit;
+  color: var(--fg);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 0;
+}
+.composer input:focus, .composer textarea:focus { outline: 2px solid var(--accent); outline-offset: 0; border-color: var(--accent); }
+.composer textarea { min-height: 130px; resize: vertical; }
+.hint { margin: 0; font-size: .9rem; color: var(--muted); }
+
+.site-foot { border-top: 1px solid var(--line); }
+.foot-in { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; padding-block: 28px; font: 500 .78rem var(--font-mono); letter-spacing: .06em; color: var(--muted); }
+.foot-in a { color: var(--fg); text-decoration-color: var(--accent); text-underline-offset: 4px; }
+
+.fab {
+  position: fixed;
+  right: calc(16px + env(safe-area-inset-right, 0px));
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  z-index: 25;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  color: var(--ink);
+  background: var(--accent);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, .6);
+  transition: transform .2s, opacity .2s, background .2s;
+}
+.fab:hover { transform: translateY(-3px); background: var(--accent-hover); }
+.fab.hide { opacity: 0; pointer-events: none; transform: translateY(8px); }
+.fab svg { width: 28px; height: 28px; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 880px) {
+  .hero-grid, .about-grid, .contact-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 720px) {
+  .proj-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  .head-in { grid-template-columns: minmax(0, 1fr); }
+  .tc { display: none; }
+  nav { justify-self: stretch; }
+  nav ul { justify-content: space-between; }
+  nav a { padding: 8px 6px; }
+  .spec > div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  :root { --lnum: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .sweep::after, .spin { animation: none; }
+  .proj, .thumb svg, .btn, .fab { transition: none; }
+}
+</style>
+
+<header class="site-head">
+  <div class="wrap head-in">
+    <a class="brand" href="#hero"><i></i><span data-name>Your Name</span></a>
+    <nav aria-label="Main">
+      <ul>
+        <li><a href="#about">About</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+    <span class="tc" id="pageTc" aria-hidden="true">00:00:00:00</span>
+  </div>
+</header>
+
+<main>
+  <section class="hero" id="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">Motion designer &amp; front-end developer</p>
+        <h1>I animate in <em>After Effects</em> and build in HTML&nbsp;&amp;&nbsp;CSS.</h1>
+        <p class="lede">I make titles, logo stings and kinetic type, then build the web pages they live on.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#projects">See projects</a>
+          <a class="btn" data-wa href="https://wa.me/99999999" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.7-1.2A9 9 0 1 0 12 3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 8.5c0 3.5 3 6.5 6.5 6.5l1.2-1.6-2-1-.9.8c-1-.4-1.9-1.3-2.3-2.3l.8-.9-1-2L9 8.5z" fill="currentColor"/></svg>
+            WhatsApp me
+          </a>
+        </div>
+      </div>
+
+      <div class="comp" aria-hidden="true">
+        <div class="comp-bar"><span>Comp 1 · 1920×1080 · 24 fps</span><b id="heroTc">00:00:00:00</b></div>
+        <div class="stage">
+          <div class="stage-title" id="stageTitle">Motion</div>
+          <div class="orb" id="orb"></div>
+          <div class="sq" id="sq"></div>
+        </div>
+        <div class="track">
+          <div class="ruler"></div>
+          <div class="kf-row">
+            <i class="kf" data-at="0.06" style="left:6%"></i>
+            <i class="kf" data-at="0.38" style="left:38%"></i>
+            <i class="kf" data-at="0.70" style="left:70%"></i>
+          </div>
+          <div class="playhead" id="playhead"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="about">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Profile</p>
+        <h2>About</h2>
+      </div>
+      <div class="about-grid">
+        <div class="about-copy">
+          <p class="lead">I'm a motion designer who also writes the code for the page.</p>
+          <p>In After Effects I work on titles, logo reveals and kinetic type, where a few frames of timing decide whether a move feels sharp or sloppy. In HTML and CSS I turn designs into fast, readable pages that work on a phone as well as a desktop.</p>
+          <p>I like projects where motion has a job: guiding the eye, confirming a click, or giving a brand a pulse.</p>
+        </div>
+        <dl class="spec">
+          <div><dt>Focus</dt><dd>Motion graphics and front-end pages</dd></div>
+          <div><dt>Tools</dt><dd>After Effects, HTML, CSS</dd></div>
+          <div><dt>Delivers</dt><dd>Video files and web pages</dd></div>
+          <div><dt>Reach me</dt><dd>WhatsApp</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="skills">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Layers</p>
+        <h2>Skills</h2>
+      </div>
+      <div class="layers">
+        <div class="sweep" aria-hidden="true"></div>
+
+        <article class="layer">
+          <div class="lnum" aria-hidden="true">1</div>
+          <div class="lmain">
+            <div class="lbody">
+              <div class="lhead"><h3>After Effects</h3><span class="lkind">Motion</span></div>
+              <p>Title sequences, logo stings, kinetic type and social motion graphics. I work with shape layers, precomps, expressions and graph editor easing so every move has weight.</p>
+              <ul class="tags"><li>Kinetic type</li><li>Compositing</li><li>Expressions</li><li>Shape layers</li><li>Easing</li></ul>
+            </div>
+            <div class="lbar" aria-hidden="true"><i style="left:12%"></i><i style="left:46%"></i><i style="left:81%"></i></div>
+          </div>
+        </article>
+
+        <article class="layer">
+          <div class="lnum" aria-hidden="true">2</div>
+          <div class="lmain">
+            <div class="lbody">
+              <div class="lhead"><h3>HTML</h3><span class="lkind">Structure</span></div>
+              <p>Semantic, accessible markup that reads well without styles and loads fast. Headings, landmarks, forms and media are set up the way screen readers and search engines expect.</p>
+              <ul class="tags"><li>Semantic markup</li><li>Accessibility</li><li>Forms</li><li>SEO basics</li></ul>
+            </div>
+            <div class="lbar" aria-hidden="true"><i style="left:22%"></i><i style="left:58%"></i><i style="left:90%"></i></div>
+          </div>
+        </article>
+
+        <article class="layer">
+          <div class="lnum" aria-hidden="true">3</div>
+          <div class="lmain">
+            <div class="lbody">
+              <div class="lhead"><h3>CSS</h3><span class="lkind">Style</span></div>
+              <p>Responsive layouts with Grid and Flexbox, custom properties for theming, and transitions and keyframe animation that carry motion ideas from After Effects into the browser.</p>
+              <ul class="tags"><li>Grid</li><li>Flexbox</li><li>Custom properties</li><li>Keyframe animation</li><li>Responsive design</li></ul>
+            </div>
+            <div class="lbar" aria-hidden="true"><i style="left:8%"></i><i style="left:39%"></i><i style="left:73%"></i></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="projects">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Compositions</p>
+        <h2>Projects</h2>
+      </div>
+      <!-- Replace the titles, text and thumbnails below with your own work. -->
+      <div class="proj-grid">
+
+        <article class="proj">
+          <div class="thumb">
+            <svg viewBox="0 0 320 180" role="img" aria-label="Three stacked copies of the word MOTION, outlined and solid">
+              <g class="svg-display" text-anchor="middle" font-size="76">
+                <text class="fn sa" x="160" y="76" stroke-width="1.5" stroke-opacity=".25">MOTION</text>
+                <text class="fn sa" x="160" y="116" stroke-width="1.5" stroke-opacity=".55">MOTION</text>
+                <text class="fa" x="160" y="156">MOTION</text>
+              </g>
+            </svg>
+          </div>
+          <div class="pinfo">
+            <div class="pmeta"><b>After Effects</b><span>Motion</span></div>
+            <h3>Kinetic Type Reel</h3>
+            <p>A 30-second reel of animated headlines, with tracking, scale and position keyframes and custom easing on every line.</p>
+            <ul class="tags"><li>After Effects</li><li>Kinetic type</li></ul>
+          </div>
+        </article>
+
+        <article class="proj">
+          <div class="thumb">
+            <svg viewBox="0 0 320 180" role="img" aria-label="Concentric rings with a spinning yellow arc around a solid dot">
+              <circle class="fn sl" cx="160" cy="90" r="64" stroke-width="2"/>
+              <circle class="fn sl" cx="160" cy="90" r="44" stroke-width="2"/>
+              <path class="fn sl" d="M52 90H100M220 90H268" stroke-width="2"/>
+              <g class="spin"><circle class="fn sa" cx="160" cy="90" r="64" stroke-width="4" stroke-dasharray="110 292"/></g>
+              <circle class="fa" cx="160" cy="90" r="22"/>
+            </svg>
+          </div>
+          <div class="pinfo">
+            <div class="pmeta"><b>After Effects</b><span>Motion</span></div>
+            <h3>Logo Sting Pack</h3>
+            <p>Five short logo reveals built from shape layers and one shared precomp, so brand colors swap in seconds.</p>
+            <ul class="tags"><li>After Effects</li><li>Shape layers</li></ul>
+          </div>
+        </article>
+
+        <article class="proj">
+          <div class="thumb">
+            <svg viewBox="0 0 320 180" role="img" aria-label="Wireframe of a landing page with a yellow headline block and a circle graphic">
+              <rect class="fp sl" x="36" y="22" width="248" height="136" stroke-width="1.5"/>
+              <path class="fn sl" d="M36 42H284" stroke-width="1.5"/>
+              <circle class="fa" cx="49" cy="32" r="3"/><circle class="fl" cx="61" cy="32" r="3"/><circle class="fl" cx="73" cy="32" r="3"/>
+              <rect class="fa" x="54" y="62" width="120" height="14"/>
+              <rect class="fa" x="54" y="82" width="88" height="14"/>
+              <rect class="fl" x="54" y="108" width="110" height="5"/>
+              <rect class="fl" x="54" y="118" width="90" height="5"/>
+              <rect class="fn sa" x="54" y="132" width="52" height="14" stroke-width="1.5"/>
+              <circle class="fn sa" cx="228" cy="104" r="34" stroke-width="1.5"/>
+              <circle class="fa" cx="228" cy="104" r="14"/>
+            </svg>
+          </div>
+          <div class="pinfo">
+            <div class="pmeta"><b>HTML &amp; CSS</b><span>Web</span></div>
+            <h3>Studio Landing Page</h3>
+            <p>A one-page site with a CSS Grid layout, fluid type and a hero that animates in with keyframes. No frameworks.</p>
+            <ul class="tags"><li>HTML</li><li>CSS Grid</li><li>Keyframes</li></ul>
+          </div>
+        </article>
+
+        <article class="proj">
+          <div class="thumb">
+            <svg viewBox="0 0 320 180" role="img" aria-label="An easing curve with two handles, like the After Effects graph editor">
+              <path class="fn sm" d="M40 20V150H300" stroke-width="1.5"/>
+              <path class="fn sm" d="M40 150H120M190 30H290" stroke-width="1.5" stroke-dasharray="4 4"/>
+              <path class="fn sa" d="M40 150C120 150 190 30 290 30" stroke-width="3.5"/>
+              <circle class="fp sa" cx="120" cy="150" r="5" stroke-width="2"/>
+              <circle class="fp sa" cx="190" cy="30" r="5" stroke-width="2"/>
+              <rect class="fa" x="-6" y="-6" width="12" height="12" transform="translate(40 150) rotate(45)"/>
+              <rect class="fa" x="-6" y="-6" width="12" height="12" transform="translate(290 30) rotate(45)"/>
+            </svg>
+          </div>
+          <div class="pinfo">
+            <div class="pmeta"><b>HTML &amp; CSS</b><span>Web</span></div>
+            <h3>Motion UI Kit</h3>
+            <p>Buttons, menus and cards with hover and focus transitions, tuned with the same ease curves used in After Effects.</p>
+            <ul class="tags"><li>HTML</li><li>CSS</li><li>Transitions</li></ul>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="contact">
+    <div class="wrap contact-grid">
+      <div>
+        <p class="eyebrow">WhatsApp</p>
+        <h2>Let's make something move</h2>
+        <p class="contact-lead">Have a project in mind? Send me a message on WhatsApp with what you need and when you need it.</p>
+        <p class="num-label">WhatsApp number</p>
+        <p class="big-num" id="bigNum" data-number>99999999</p>
+        <button class="btn" type="button" id="copyNum">Copy number</button>
+        <p class="copy-status" id="copyStatus" role="status" aria-live="polite"></p>
+      </div>
+
+      <form class="composer" id="composer" autocomplete="off">
+        <div>
+          <label for="ctName">Your name</label>
+          <input id="ctName" type="text" placeholder="Optional">
+        </div>
+        <div>
+          <label for="ctMsg">Message</label>
+          <textarea id="ctMsg">I saw your portfolio and I'd like to talk about a project.</textarea>
+        </div>
+        <a class="btn btn-primary" id="sendWa" href="https://wa.me/99999999" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.7-1.2A9 9 0 1 0 12 3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 8.5c0 3.5 3 6.5 6.5 6.5l1.2-1.6-2-1-.9.8c-1-.4-1.9-1.3-2.3-2.3l.8-.9-1-2L9 8.5z" fill="currentColor"/></svg>
+          Open WhatsApp chat
+        </a>
+        <p class="hint">This opens WhatsApp in a new tab with your message filled in. You press send there.</p>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap foot-in">
+    <span>© <span id="year">2026</span> <span data-name>Your Name</span></span>
+    <a href="#hero">Back to top</a>
+  </div>
+</footer>
+
+<a class="fab" id="fab" data-wa href="https://wa.me/99999999" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.7-1.2A9 9 0 1 0 12 3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 8.5c0 3.5 3 6.5 6.5 6.5l1.2-1.6-2-1-.9.8c-1-.4-1.9-1.3-2.3-2.3l.8-.9-1-2L9 8.5z" fill="currentColor"/></svg>
+</a>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ===== Edit these three values ===== */
+  var CONFIG = {
+    name: "Your Name",
+    whatsapp: "99999999", // digits only; add your country code in front so the chat link works
+    greeting: "Hi! I saw your portfolio and I'd like to talk about a project."
+  };
+
+  var $ = function (s) { return document.querySelector(s); };
+  var $$ = function (s) { return Array.prototype.slice.call(document.querySelectorAll(s)); };
+  var pad = function (n) { return (n < 10 ? "0" : "") + n; };
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ----- name, number, WhatsApp links ----- */
+  var digits = String(CONFIG.whatsapp).replace(/\D/g, "");
+  var waUrl = function (text) {
+    return "https://wa.me/" + digits + (text ? "?text=" + encodeURIComponent(text) : "");
+  };
+  $$("[data-name]").forEach(function (el) { el.textContent = CONFIG.name; });
+  $$("[data-number]").forEach(function (el) { el.textContent = CONFIG.whatsapp; });
+  $$("[data-wa]").forEach(function (a) { a.href = waUrl(CONFIG.greeting); });
+  $("#year").textContent = new Date().getFullYear();
+
+  /* ----- composer builds the WhatsApp link as you type ----- */
+  var nameIn = $("#ctName"), msgIn = $("#ctMsg"), sendBtn = $("#sendWa");
+  function buildLink() {
+    var n = nameIn.value.trim();
+    var m = msgIn.value.trim();
+    var text = ((n ? "Hi, I'm " + n + ". " : "Hi! ") + m).trim();
+    sendBtn.href = waUrl(text);
+  }
+  nameIn.addEventListener("input", buildLink);
+  msgIn.addEventListener("input", buildLink);
+  $("#composer").addEventListener("submit", function (e) { e.preventDefault(); });
+  buildLink();
+
+  /* ----- copy number ----- */
+  var status = $("#copyStatus");
+  $("#copyNum").addEventListener("click", function () {
+    var done = function () { status.textContent = "Number copied."; };
+    var fallback = function () {
+      try {
+        var r = document.createRange();
+        r.selectNodeContents($("#bigNum"));
+        var s = window.getSelection();
+        s.removeAllRanges();
+        s.addRange(r);
+        status.textContent = "Number selected. Copy it from your device menu.";
+      } catch (err) {
+        status.textContent = "Select the number above to copy it.";
+      }
+    };
+    try {
+      navigator.clipboard.writeText(CONFIG.whatsapp).then(done, fallback);
+    } catch (err) {
+      fallback();
+    }
+  });
+
+  /* ----- smooth in-page links (no hash change) ----- */
+  $$('a[href^="#"]').forEach(function (a) {
+    a.addEventListener("click", function (e) {
+      var target = document.getElementById(a.getAttribute("href").slice(1));
+      if (!target) return;
+      e.preventDefault();
+      target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+    });
+  });
+
+  /* ----- nav highlight + floating button visibility ----- */
+  var links = $$("nav a");
+  if ("IntersectionObserver" in window) {
+    var navIo = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        links.forEach(function (a) {
+          if (a.getAttribute("href") === "#" + en.target.id) a.setAttribute("aria-current", "true");
+          else a.removeAttribute("aria-current");
+        });
+      });
+    }, { rootMargin: "-45% 0px -50% 0px" });
+    $$("main section[id]").forEach(function (s) { navIo.observe(s); });
+
+    var fab = $("#fab");
+    new IntersectionObserver(function (entries) {
+      fab.classList.toggle("hide", entries[0].isIntersecting);
+    }, { threshold: 0.4 }).observe($("#contact"));
+  }
+
+  /* ----- page timecode follows scroll (a 90 second comp) ----- */
+  var pageTc = $("#pageTc"), ticking = false, TOTAL = 90, FPS = 24;
+  function fmt(frames) {
+    var f = frames % FPS;
+    var s = Math.floor(frames / FPS) % 60;
+    var m = Math.floor(frames / (FPS * 60)) % 60;
+    var h = Math.floor(frames / (FPS * 3600));
+    return pad(h) + ":" + pad(m) + ":" + pad(s) + ":" + pad(f);
+  }
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () {
+      ticking = false;
+      var max = document.documentElement.scrollHeight - window.innerHeight;
+      var p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+      pageTc.textContent = fmt(Math.round(p * TOTAL * FPS));
+    });
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  /* ----- hero comp loop ----- */
+  var orb = $("#orb"), sq = $("#sq"), title = $("#stageTitle"), ph = $("#playhead"), heroTc = $("#heroTc");
+  var kfs = $$(".kf");
+  var DUR = 4200;
+  var ease = function (t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; };
+  function draw(t) {
+    var e = ease(Math.min(1, t / 0.7));
+    orb.style.left = (6 + e * 76) + "%";
+    sq.style.transform = "rotate(" + (e * 180) + "deg)";
+    title.style.letterSpacing = ((1 - e) * 0.3 + 0.02) + "em";
+    title.style.opacity = String(0.25 + 0.75 * e);
+    ph.style.left = (t * 100) + "%";
+    kfs.forEach(function (k) { k.classList.toggle("on", t >= parseFloat(k.dataset.at)); });
+    var secs = t * DUR / 1000;
+    heroTc.textContent = "00:00:" + pad(Math.floor(secs)) + ":" + pad(Math.floor((secs % 1) * 24));
+  }
+  if (reduce) {
+    draw(0.72);
+  } else {
+    requestAnimationFrame(function loop(now) {
+      draw((now % DUR) / DUR);
+      requestAnimationFrame(loop);
+    });
+  }
+})();
+</script>
